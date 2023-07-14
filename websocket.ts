@@ -4,6 +4,7 @@ import log from './src/logging/log';
 import moment from 'moment';
 import Proxy from './src/proxy';
 import { IncomingMessage } from 'http';
+import config from "./config";
 const inArray = require("in_array");
 
 /**
@@ -62,17 +63,19 @@ export default function websocket(websocket: HostipWebSocket, request: IncomingM
         }
     });
 
-    // Log messages if debug is enabled
-    websocket.on('message', (text: string) => {
-        try {
-            const message = JSON.parse(text);
-            log(Date.now() + " Received " + message.type + " message:", "info");
-            log(message, 'info');
-        } catch (error) {
-            console.error("Caught error when logging websocket message for debug mode");
-            console.error(error);
-        }
-    });
+    if (config.runtime.debug) {
+        // Log messages if debug is enabled
+        websocket.on('message', (text: string) => {
+            try {
+                const message = JSON.parse(text);
+                log(Date.now() + " Received " + message.type + " message:", "info");
+                log(message, 'info');
+            } catch (error) {
+                console.error("Caught error when logging websocket message for debug mode");
+                console.error(error);
+            }
+        });
+    }
 
     websocket.on('error', (code: number, reason: string) => {
         console.info("Caught an error. Error code: " + code + " Reason: " + reason);
@@ -89,7 +92,7 @@ export default function websocket(websocket: HostipWebSocket, request: IncomingM
             console.info("Connection Closed. Code: " + code + " Reason: " + reason);
         } catch (error) {
             console.error("Caught error when closing websocket connection");
-            console.error(error);           
-        } 
+            console.error(error);
+        }
     });
 }
