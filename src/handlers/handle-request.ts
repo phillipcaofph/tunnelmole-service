@@ -23,10 +23,8 @@ const handleRequest = async function(request : Request, response : Response) {
     }
 
     const headers = {};
-    for (const key in request.headers) {
-        const name = capitalize.words(key);
-        const value = request.headers[key];
-        headers[name] = value;
+    for (let index = 0; index < request.rawHeaders.length; index += 2) {
+      headers[request.rawHeaders[index]] = request.rawHeaders[index + 1];
     }
 
     // Get the request body, wether binary or text as a base64 string for trouble-free transmission over the WebSocket connection
