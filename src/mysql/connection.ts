@@ -6,12 +6,12 @@ let connection: mysql.Connection;
 
 const getConnection = async () => {
     if (!connection) {
-        connection = await mysql.createConnection({
-            host     : config.mysql.host,
-            user     : config.mysql.user,
-            password : config.mysql.password,
-            database : config.mysql.database
-        });
+        connection =
+        typeof config.mysql === "string"
+          ? await mysql.createConnection(config.mysql)
+          : config.mysql
+          ? await mysql.createConnection(config.mysql)
+          : null;
     }
 
     return connection;
