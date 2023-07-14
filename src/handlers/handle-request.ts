@@ -31,7 +31,7 @@ const handleRequest = async function(request : Request, response : Response) {
 
     // Get the request body, wether binary or text as a base64 string for trouble-free transmission over the WebSocket connection
     // Unless its just an empty object, then set it to an empty string
-    const body = JSON.stringify(request.body) === JSON.stringify({}) ? '' : request.body.toString('base64');
+    const body = Buffer.isBuffer(request.body) ? request.body.toString("base64") : "";
 
     const forwardedRequest : ForwardedRequestMessage = {
         requestId,
