@@ -6,7 +6,7 @@ import Proxy from "../proxy";
 const topSecretPassword = config.server.password;
 
 const tunnelmoleConnections = async function(req : Request, res : Response) {
-    const password = req.query.password ?? "";
+    const password = req.query.password;
 
     if (!password || password !== topSecretPassword) {
         res.status(401);

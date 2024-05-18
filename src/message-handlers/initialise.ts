@@ -26,7 +26,7 @@ const { verify } = require('reverse-dns-lookup');
 export default async function initialise(message: InitialiseMessage, websocket: HostipWebSocket) {
     let subdomain = generateRandomSubdomain(websocket);
     const authorized = await authorize(message, websocket, subdomain);
-    
+
     if (authorized === false) {
         // You shall not pass
         return false;
@@ -34,49 +34,49 @@ export default async function initialise(message: InitialiseMessage, websocket: 
 
     // By default use a random subdomain unless the subscription is valid and a subdomain is passed
     if (typeof message.subdomain === 'string') {
-        const reservedDomain: ReservedDomain = {
-            apiKey: message.apiKey,
-            subdomain: message.subdomain
-        };
+    //     const reservedDomain: ReservedDomain = {
+    //         apiKey: message.apiKey,
+    //         subdomain: message.subdomain
+    //     };
 
-        // Reserve and set the requested domain, or send back a message in case of failure
-        const result = await reserveDomain(reservedDomain);
-        switch (result) {
-            case TOO_MANY_DOMAINS:
-                const tooManyDomains: TooManyDomains = {
-                    type: "tooManyDomains",
-                    subdomain
-                }
+    //     // Reserve and set the requested domain, or send back a message in case of failure
+    //     const result = await reserveDomain(reservedDomain);
+    //     switch (result) {
+    //         case TOO_MANY_DOMAINS:
+    //             const tooManyDomains: TooManyDomains = {
+    //                 type: "tooManyDomains",
+    //                 subdomain
+    //             }
 
-                websocket.sendMessage(tooManyDomains);
-                break;
-            case DOMAIN_ALREADY_RESERVED:
-                const domainAlreadyReservedMessage: DomainAlreadyReserved = {
-                    type: "domainAlreadyReserved",
-                    subdomain: message.subdomain,
-                }
+    //             websocket.sendMessage(tooManyDomains);
+    //             break;
+    //         case DOMAIN_ALREADY_RESERVED:
+    //             const domainAlreadyReservedMessage: DomainAlreadyReserved = {
+    //                 type: "domainAlreadyReserved",
+    //                 subdomain: message.subdomain,
+    //             }
 
-                websocket.sendMessage(domainAlreadyReservedMessage);
-                break;
-            case SUCCESS:
+    //             websocket.sendMessage(domainAlreadyReservedMessage);
+    //             break;
+    //         case SUCCESS:
                 subdomain = message.subdomain;
-                break;
-            case ERROR:
-                const domainReservationError: DomainReservationError = {
-                    type: "domainReservationError",
-                    subdomain
-                }
+    //             break;
+    //         case ERROR:
+    //             const domainReservationError: DomainReservationError = {
+    //                 type: "domainReservationError",
+    //                 subdomain
+    //             }
 
-                websocket.sendMessage(domainReservationError);
-                break;
-        }
+    //             websocket.sendMessage(domainReservationError);
+    //             break;
+    //     }
     }
 
     const clientId = message.clientId;
     const hostname = subdomain + '.' + config.server.domain
 
     let isBannedHostname;
-    
+
     try {
         isBannedHostname = await verify(websocket.ipAddress, ...bannedHostnames);
     } catch (error) {

@@ -13,7 +13,7 @@ export default class Proxy {
     }
 
     findConnectionsByClientId(clientId: string): Connection[] {
-        return this.connections.filter((connection: Connection) => connection.clientId === clientId);        
+        return this.connections.filter((connection: Connection) => connection.clientId === clientId);
     }
 
     findConnectionByHostname(hostname : string) : Connection|undefined {
@@ -41,6 +41,8 @@ export default class Proxy {
 
             if (connection.clientId === clientId) {
                 this.connections.splice(i, 1);
+
+                connection.sockets?.forEach((socket) => socket.terminate());
             }
         }
     }
